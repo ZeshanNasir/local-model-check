@@ -25,7 +25,7 @@ Speed is how fast the model writes, in tokens per second (a token is a few chara
 - **Stays on your Mac.** It talks only to Ollama on this Mac and stops if `OLLAMA_HOST` points elsewhere. No telemetry, no accounts.
 - **Downloads only after you type `y`.** It never installs Ollama or anything else.
 - **Model-written code is confined.** The bug-fix task runs the model's patch under macOS `sandbox-exec`: no network, and no writes outside a temporary copy of the project. A test proves it.
-- **Saves little.** `results/` (ignored by Git) holds the table and timings, the chip, memory, macOS, Python and Ollama versions, and only the model you tested. No hostnames, usernames, serial numbers or paths.
+- **Saves little.** `results/` (ignored by Git) holds the table and timings, the Mac model, chip, memory, macOS, Python and Ollama versions, power source, free memory and swap use, and only the model you tested. No hostnames, usernames, serial numbers or paths.
 - **Starts each test cold.** It unloads the models Ollama has loaded.
 
 You need an Apple Silicon Mac, Python 3.10 or newer, and Ollama installed and running.

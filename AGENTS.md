@@ -37,7 +37,7 @@ The reference machine is a MacBook Pro M4 Pro with 48 GB. Other Apple Silicon en
 - Smallest change that solves a demonstrated problem. Prefer Ollama's own features and the existing code.
 - Standard library only. A test fails if anything else is imported. Tests need no model and no network. Mock downloads and inference when testing control flow.
 - Model replies and model-written code are untrusted. A malformed reply fails its task and never stops the run. The code-fix task runs under `sandbox-exec` with no network and no writes outside a temporary copy of the project. Do not weaken either.
-- The tool talks only to Ollama on this Mac, and a saved run holds only the chip, memory, macOS, Python and Ollama versions, timings, and the tested model. No hostnames, usernames, serial numbers, paths or other installed models.
+- The tool talks only to Ollama on this Mac, and a saved run holds only timings, the tested model, and the Mac model, chip, memory, macOS, Python and Ollama versions, power source, free memory and swap use. No hostnames, usernames, serial numbers, paths or other installed models.
 - Check the source and the final diff. A passing test run is not proof of behaviour.
 - No new repositories, frameworks, routers, sidecars, speculative features or unrelated cleanup.
 - Change nothing outside this repository as part of this work.
