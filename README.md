@@ -12,18 +12,18 @@ cd ai-local
 
 You need a Mac with Apple Silicon, Python 3.10 or newer, and Ollama installed and running. Nothing else.
 
-`./lab` lists the three models measured in [RESULTS.md](RESULTS.md) and asks you to pick one. A test takes about a minute. It prints one table and saves it in `results/`:
+`./lab` lists the models measured in [RESULTS.md](RESULTS.md) and asks you to pick one. A test takes about a minute. It prints one table and saves it in `results/`:
 
 ```
 Model              Speed  Tasks passed  Verdict
-gemma4:26b-mlx  60 tok/s         14/15  fast, missed code fix
+gemma4:26b-mlx  56 tok/s         14/15  fast, missed code fix
 ```
 
 That is a real run on an M4 Pro. To skip the picker: `./lab gemma4:26b-mlx`.
 
 ## What it supports
 
-Ollama with MLX-format models on Apple Silicon, and nothing else. `./lab` accepts only these three, which are tags labelled MLX in the official Ollama library: [`qwen3.6:35b-mlx`](https://ollama.com/library/qwen3.6/tags), [`gemma4:26b-mlx`](https://ollama.com/library/gemma4/tags) and [`qwen3.8:27b-mlx`](https://ollama.com/library/qwen3.8/tags). Each needs a recent Ollama: `ollama show MODEL` prints the minimum version.
+Ollama models that run on its MLX runner, on Apple Silicon, and nothing else. `./lab` accepts only the models in [RESULTS.md](RESULTS.md), all official Ollama library tags that showed RUNNER `mlx` in `ollama ps`: [`qwen3.6:35b-mlx`](https://ollama.com/library/qwen3.6/tags), [`gemma4:26b-mlx`](https://ollama.com/library/gemma4/tags), [`qwen3.8:27b-mlx`](https://ollama.com/library/qwen3.8/tags) and [`flint:40b-a2b-qat-int4`](https://ollama.com/library/flint/tags). Each needs a recent Ollama: `ollama show MODEL` prints the minimum version.
 
 It does not support other runtimes such as llama.cpp, other models, remote servers or hosted models.
 

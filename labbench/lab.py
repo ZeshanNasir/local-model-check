@@ -15,7 +15,7 @@ from . import bench, env, ollama, workloads
 
 ROOT = Path(__file__).resolve().parent.parent
 FAST_TOK_S = 40  # a local rule of thumb, not a standard
-MEASURED = ("qwen3.6:35b-mlx", "gemma4:26b-mlx", "qwen3.8:27b-mlx")  # official Ollama MLX tags, measured in RESULTS.md. The only models ./lab accepts.
+MEASURED = ("qwen3.6:35b-mlx", "gemma4:26b-mlx", "qwen3.8:27b-mlx", "flint:40b-a2b-qat-int4")  # official Ollama library tags, measured in RESULTS.md. The only models ./lab accepts.
 
 
 def preflight():
@@ -51,10 +51,10 @@ def choose(installed, ask=input):
     for i, name in enumerate(MEASURED, 1):
         print(f"  {i}. {name:<18} {'installed' if name in installed else 'not installed'}")
     try:
-        pick = ask("Pick 1-3 (Enter to quit): ").strip()
+        pick = ask(f"Pick 1-{len(MEASURED)} (Enter to quit): ").strip()
     except EOFError:
         return None
-    return MEASURED[int(pick) - 1] if pick in ("1", "2", "3") else None
+    return MEASURED[int(pick) - 1] if pick.isdigit() and 1 <= int(pick) <= len(MEASURED) else None
 
 
 def test(model):
@@ -115,7 +115,7 @@ def main(argv=None):
         results.append(test(model))
 
     text = table(results)
-    out = ROOT / "results" / datetime.now().strftime("%Y-%m-%dT%H%M")
+    out = ROOT / "results" / datetime.now().strftime("%Y-%m-%dT%H%M%S")
     out.mkdir(parents=True, exist_ok=True)
     (out / "report.md").write_text(f"# ai-local\n\n{machine}\n\n```\n{text}\n```\n")
     (out / "results.json").write_text(json.dumps({"environment": snap, "results": results}, indent=1) + "\n")

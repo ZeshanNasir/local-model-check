@@ -109,7 +109,8 @@ class Lab(unittest.TestCase):
     def test_choose_returns_the_picked_model(self):
         with mock.patch("builtins.print"):
             self.assertEqual(lab.choose([], ask=lambda _: "2"), "gemma4:26b-mlx")
-            for answer in ("", "0", "4", "x"):
+            self.assertEqual(lab.choose([], ask=lambda _: str(len(lab.MEASURED))), lab.MEASURED[-1])
+            for answer in ("", "0", str(len(lab.MEASURED) + 1), "x"):
                 self.assertIsNone(lab.choose([], ask=lambda _, a=answer: a))
             self.assertIsNone(lab.choose([], ask=mock.Mock(side_effect=EOFError)))
 

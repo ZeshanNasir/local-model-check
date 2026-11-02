@@ -10,10 +10,12 @@ This is a small engineering utility. It is not a general AI platform, a framewor
 
 ## Supported runtime: strict boundary
 
-- **Ollama with MLX-format models, on Apple Silicon macOS only.**
-- Models come from the official Ollama library through `ollama pull`. The supported list is `MEASURED` in `labbench/lab.py`. Today: `qwen3.6:35b-mlx`, `gemma4:26b-mlx`, `qwen3.8:27b-mlx`.
+- **Ollama models that run on its MLX runner, on Apple Silicon macOS only.**
+- Models come from the official Ollama library through `ollama pull`. The supported list is `MEASURED` in `labbench/lab.py`. Today: `qwen3.6:35b-mlx`, `gemma4:26b-mlx`, `qwen3.8:27b-mlx`, `flint:40b-a2b-qat-int4`.
 - A model joins the list only after its results are published in `RESULTS.md`.
 - Out of scope unless the owner explicitly decides otherwise: llama.cpp and other runtimes, external or remote inference servers, hosted-model fallbacks, runtime adapters.
+
+This repository is the public benchmark tool and nothing else. Other directories or repositories on the owner's machines may also be called ai-local; do not assume they share code, configuration or scope with this one.
 
 ## Intended experience
 
