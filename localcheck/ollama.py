@@ -5,7 +5,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 def base_url():
@@ -20,7 +20,6 @@ def is_loopback():
 @dataclass
 class Generation:
     text: str = ""
-    thinking: str = ""
     ttft_s: float = 0.0  # request sent -> first streamed token (answer or reasoning)
     wall_s: float = 0.0
     load_s: float = 0.0  # model load time reported by the server
@@ -29,7 +28,6 @@ class Generation:
     decode_tokens: int = 0
     decode_s: float = 0.0
     error: str = ""
-    extra: dict = field(default_factory=dict)
 
     @property
     def prompt_tok_s(self):
@@ -46,15 +44,13 @@ def _request(path, body, timeout):
     return urllib.request.urlopen(req, timeout=timeout)
 
 
-def generate(model, prompt, *, num_ctx=8192, num_predict=256, seed=1, think=False, fmt=None,
+def generate(model, prompt, *, num_ctx=8192, num_predict=256, seed=1, think=False,
              keep_alive="10m", timeout=900):
     """Stream one completion. temperature is 0 so repeated runs are comparable."""
     body = {"model": model, "prompt": prompt, "stream": True, "keep_alive": keep_alive,
             "options": {"num_ctx": num_ctx, "num_predict": num_predict, "temperature": 0, "seed": seed}}
     if think is not None:
         body["think"] = think
-    if fmt:
-        body["format"] = fmt
     out = Generation()
     start = time.perf_counter()
     try:
@@ -76,7 +72,6 @@ def generate(model, prompt, *, num_ctx=8192, num_predict=256, seed=1, think=Fals
                 if (piece or thought) and not out.ttft_s:
                     out.ttft_s = time.perf_counter() - start
                 out.text += piece
-                out.thinking += thought
                 if chunk.get("done"):
                     out.load_s = chunk.get("load_duration", 0) / 1e9
                     out.prompt_tokens = chunk.get("prompt_eval_count", 0)

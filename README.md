@@ -1,50 +1,43 @@
-# ai-local
+# local-model-check
 
-Test a local AI model on your Apple Silicon Mac, using [Ollama](https://ollama.com) and its MLX models. It shows how fast the model is and how many of 15 small engineering tasks it passes, so you can judge which routine work might run locally instead of on a paid cloud model.
+Check how fast a local AI model runs on your Mac, and whether it can handle small engineering tasks.
 
-For engineers who use a Mac with Apple Silicon.
+[![CI](https://github.com/ZeshanNasir/local-model-check/actions/workflows/ci.yml/badge.svg)](https://github.com/ZeshanNasir/local-model-check/actions/workflows/ci.yml)
 
 ```sh
-git clone https://github.com/ZeshanNasir/ai-local.git
-cd ai-local
-./lab
+git clone https://github.com/ZeshanNasir/local-model-check.git
+cd local-model-check
+./check
 ```
 
-You need a Mac with Apple Silicon, Python 3.10 or newer, and Ollama installed and running. Nothing else.
-
-`./lab` lists the models measured in [RESULTS.md](RESULTS.md) and asks you to pick one. A test takes about a minute. It prints one table and saves it in `results/`:
+Pick a model. A few minutes later you get one table, and the same table is saved in `results/`:
 
 ```
 Model              Speed  Tasks passed  Verdict
 gemma4:26b-mlx  56 tok/s         14/15  fast, missed code fix
 ```
 
-That is a real run on an M4 Pro. To skip the picker: `./lab gemma4:26b-mlx`.
+Speed is how fast the model writes, in tokens per second (a token is a few characters). Tasks passed counts 15 small synthetic tasks, scored by code and not by another model: 6 log questions, 8 questions about short documents, and 1 bug fix.
 
-## What it supports
+## Built for review
 
-Ollama models that run on its MLX runner, on Apple Silicon, and nothing else. `./lab` accepts only the models in [RESULTS.md](RESULTS.md), all official Ollama library tags that showed RUNNER `mlx` in `ollama ps`: [`qwen3.6:35b-mlx`](https://ollama.com/library/qwen3.6/tags), [`gemma4:26b-mlx`](https://ollama.com/library/gemma4/tags), [`qwen3.8:27b-mlx`](https://ollama.com/library/qwen3.8/tags) and [`flint:40b-a2b-qat-int4`](https://ollama.com/library/flint/tags). Each needs a recent Ollama: `ollama show MODEL` prints the minimum version.
+- **Python standard library only.** Nothing to install or audit. A test fails if anything else is imported.
+- **Stays on your Mac.** It talks only to Ollama on this Mac and stops if `OLLAMA_HOST` points elsewhere. No telemetry, no accounts.
+- **Downloads only after you type `y`.** It never installs Ollama or anything else.
+- **Model-written code is confined.** The bug-fix task runs the model's patch under macOS `sandbox-exec`: no network, and no writes outside a temporary copy of the project. A test proves it.
+- **Saves little.** `results/` (ignored by Git) holds the table and timings, the chip, memory, macOS, Python and Ollama versions, and only the model you tested. No hostnames, usernames, serial numbers or paths.
+- **Starts each test cold.** It unloads the models Ollama has loaded.
 
-It does not support other runtimes such as llama.cpp, other models, remote servers or hosted models.
+You need an Apple Silicon Mac, Python 3.10 or newer, and Ollama installed and running.
 
-## Before anything is downloaded
+## Models
 
-If the model you pick is not installed, `./lab` asks `Download it with ollama pull MODEL? [y/N]`. These models are large. Only `y` downloads it. Any other answer downloads nothing and tests nothing.
+`./check` accepts only the models listed in [RESULTS.md](RESULTS.md), which also gives each one's measured speed and tasks passed. All are official Ollama library tags that ran on Ollama's MLX runner. `ollama show MODEL` prints the minimum Ollama version a model needs. To skip the picker: `./check gemma4:26b-mlx`.
 
-It never installs Ollama or any other software. It never sends anything to another machine. If `OLLAMA_HOST` points elsewhere, it stops.
+## What the results do not show
 
-## What the results can and cannot tell you
+They do not show that a local model can replace a cloud model, rank models in general, or promise any saving. The test uses an 8,192-token context; the 262,144 tokens the models advertise are not tested. One Mac and small synthetic tasks: check a model on your own work before you rely on it.
 
-They show speed on your Mac, and how a model does on 15 small synthetic tasks. They do not show that a local model can replace a cloud model, rank models in general, or promise any saving.
+## Contributing and security
 
-`./lab` runs with an 8,192-token context. The models advertise 262,144 tokens, but `./lab` does not test that. Longer prompts were tried once and were slow, see [RESULTS.md](RESULTS.md).
-
-Measured on one M4 Pro with 48 GB, on one day. Check a model on your own work before you rely on it.
-
-## For contributors and reviewers
-
-Read [AGENTS.md](AGENTS.md) first: the mission, the boundaries and a map of the repository.
-
-`python3 -m unittest discover -s tests` needs no model and no network.
-
-MIT licence.
+Read [AGENTS.md](AGENTS.md) first. `python3 -m unittest discover -s tests` needs no model and no network. Report security issues as described in [SECURITY.md](SECURITY.md). MIT licence.

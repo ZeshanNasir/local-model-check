@@ -51,8 +51,21 @@ def score_doc(reply, expect):
     return {"passed": True, "why": ""}
 
 
+# Model-written code runs here, so it never runs unconfined: no network, no system services, writes only inside the project.
+_SANDBOX = '(version 1)(allow default)(deny network*)(deny mach-lookup)(deny file-write* (require-not (subpath (param "WORK"))))'
+
+
 def run_tests(repo_dir, timeout=60):
-    p = subprocess.run([sys.executable, "-m", "unittest", "-q"], cwd=repo_dir, capture_output=True, text=True, timeout=timeout)
+    """Run a project's unit tests under macOS sandbox-exec. Returns (passed, output tail)."""
+    if not shutil.which("sandbox-exec"):
+        return False, "sandbox-exec not found"
+    work = str(Path(repo_dir).resolve())
+    env = {"PATH": "/usr/bin:/bin", "HOME": work, "PYTHONDONTWRITEBYTECODE": "1"}
+    try:
+        p = subprocess.run(["sandbox-exec", "-D", f"WORK={work}", "-p", _SANDBOX, sys.executable, "-m", "unittest", "-q"],
+                           cwd=work, env=env, capture_output=True, text=True, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        return False, "timeout"
     return p.returncode == 0, (p.stdout + p.stderr)[-1500:]
 
 
@@ -61,7 +74,7 @@ def score_patch(template_repo, files):
 
     Also checks scope: only files that already existed may change, and not the tests."""
     with tempfile.TemporaryDirectory() as tmp:
-        work = Path(tmp) / "repo"
+        work = Path(tmp).resolve() / "repo"
         shutil.copytree(template_repo, work)
         changed = []
         for rel, content in files.items():

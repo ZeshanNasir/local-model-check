@@ -1,4 +1,4 @@
-"""./lab: which local model should I use on this Mac?
+"""./check: which local model should I use on this Mac?
 
 Tests one of the MLX-format models in MEASURED, through Ollama on this Mac, for speed and tasks passed,
 prints one table and saves it. Downloads a model only after you type y; never talks to another machine.
@@ -15,21 +15,21 @@ from . import bench, env, ollama, workloads
 
 ROOT = Path(__file__).resolve().parent.parent
 FAST_TOK_S = 40  # a local rule of thumb, not a standard
-MEASURED = ("qwen3.6:35b-mlx", "gemma4:26b-mlx", "qwen3.8:27b-mlx", "flint:40b-a2b-qat-int4")  # official Ollama library tags, measured in RESULTS.md. The only models ./lab accepts.
+MEASURED = ("qwen3.6:35b-mlx", "gemma4:26b-mlx", "qwen3.8:27b-mlx", "flint:40b-a2b-qat-int4")  # official Ollama library tags, measured in RESULTS.md. The only models ./check accepts.
 
 
 def preflight():
     """The first problem that stops a run, as a plain sentence, or None."""
     if sys.platform != "darwin" or platform.machine() != "arm64":
-        return f"ai-local runs on macOS with Apple Silicon only (this is {sys.platform}/{platform.machine()})."
+        return f"local-model-check runs on macOS with Apple Silicon only (this is {sys.platform}/{platform.machine()})."
     if not ollama.is_loopback():
         return f"OLLAMA_HOST points at {ollama.base_url()}, not this Mac. Unset it to test local models."
     if not shutil.which("ollama"):
-        return "Ollama is not installed. Get it from https://ollama.com/download, open it once, then run ./lab again."
+        return "Ollama is not installed. Get it from https://ollama.com/download, open it once, then run ./check again."
     try:
         ollama.get("/api/version", timeout=3)
     except Exception:
-        return "Ollama is installed but not running. Open the Ollama app, then run ./lab again."
+        return "Ollama is installed but not running. Open the Ollama app, then run ./check again."
     return None
 
 
@@ -87,7 +87,7 @@ def table(results):
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else argv
     if argv[:1] in (["-h"], ["--help"]):
-        print("usage: ./lab [MODEL]\n\nTests a model for speed and tasks passed. Without MODEL it shows a picker.\nMODEL is one of: " + ", ".join(MEASURED))
+        print("usage: ./check [MODEL]\n\nTests a model for speed and tasks passed. Without MODEL it shows a picker.\nMODEL is one of: " + ", ".join(MEASURED))
         return 0
     problem = preflight()
     if problem:
@@ -111,13 +111,14 @@ def main(argv=None):
     print(machine)
     results = []
     for model in models:
-        print(f"Testing {model} (about a minute)...", flush=True)
+        print(f"Testing {model} (a few minutes)...", flush=True)
         results.append(test(model))
 
     text = table(results)
+    snap["installed_models"] = [m for m in snap["installed_models"] if m["name"] in models]  # keep only what was tested
     out = ROOT / "results" / datetime.now().strftime("%Y-%m-%dT%H%M%S")
     out.mkdir(parents=True, exist_ok=True)
-    (out / "report.md").write_text(f"# ai-local\n\n{machine}\n\n```\n{text}\n```\n")
+    (out / "report.md").write_text(f"# local-model-check\n\n{machine}\n\n```\n{text}\n```\n")
     (out / "results.json").write_text(json.dumps({"environment": snap, "results": results}, indent=1) + "\n")
     print(f"\n{text}\n\nSaved: {out.relative_to(ROOT)}/")
     return 0

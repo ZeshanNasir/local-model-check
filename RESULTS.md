@@ -1,6 +1,6 @@
 # Results
 
-Measured on 2026-11-02 on an Apple M4 Pro with 48 GB, macOS 27.0.1, Ollama 0.40.13, on AC power. Each model ran every task three times through `./lab`. Raw files: [`benchmarks/results/2026-11-02`](benchmarks/results/2026-11-02/), one file per `./lab` run.
+Measured on 2026-11-02 on an Apple M4 Pro with 48 GB, macOS 27.0.1, Ollama 0.40.13, on AC power. Each model ran every task three times through `./check`. Raw files: [`benchmarks/results/2026-11-02`](benchmarks/results/2026-11-02/), one file per `./check` run.
 
 | Model | Speed | Tasks passed | Verdict |
 | :--- | ---: | ---: | :--- |
@@ -13,14 +13,14 @@ The previous measurement of 2026-10-09 (Ollama 0.40.1, [raw files](benchmarks/re
 
 ## What else was found
 
-From the 2026-10-09 run (Ollama 0.40.1). These tests are not part of `./lab`.
+From the 2026-10-09 run (Ollama 0.40.1). These tests are not part of `./check`.
 
 - **Long prompts cost minutes.** At about 67,000 tokens the first word took 137 s (`gemma4:26b-mlx`), 150 s (`qwen3.6:35b-mlx`) and 704 s (`qwen3.8:27b-mlx`). Swap use grew by about 1.8 GB and 3.2 GB for the last two. Only `gemma4:26b-mlx` was tried at about 136,000 tokens: it recalled the planted fact after 388 s and swap grew by about 1.8 GB.
-- **The advertised context was not tested.** The models advertise 262,144 tokens. Nothing here shows that length works on this Mac. `./lab` runs at 8,192 tokens.
+- **The advertised context was not tested.** The models advertise 262,144 tokens. Nothing here shows that length works on this Mac. `./check` runs at 8,192 tokens.
 - **Letting a model run the tests helps.** `gemma4:26b-mlx` failed the code fix when answering in one go, but fixed it in three of three sessions in the OpenCode coding agent, where it could run the tests.
 - **Local is not automatically private.** Ollama only used this machine. OpenCode, the agent around it, also connected to outside servers whose purpose was not identified.
 
-The long-prompt and agent tests are not part of `./lab` any more. Their raw files are kept with the others.
+The long-prompt and agent tests are not part of `./check` any more. Their raw files are kept with the others.
 
 ## How it is measured
 

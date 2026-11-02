@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 
 from . import ollama
-from .scoring import parse_json, score_doc, score_log, score_patch
+from .scoring import parse_json, run_tests, score_doc, score_log, score_patch
 
 DATA = Path(__file__).resolve().parent.parent / "data" / "synthetic"
 
@@ -62,10 +62,17 @@ def doc_prompt(question, docs):
 
 
 def code_prompt():
-    from .scoring import run_tests
     repo = DATA / "coding" / "repo"
     files = "\n\n".join(f"--- {p.relative_to(repo)} ---\n{p.read_text()}" for p in sorted(repo.rglob("*.py")) if p.read_text().strip())
     return CODE_PROMPT.format(files=files, tests=run_tests(repo)[1])
+
+
+def _score(fn, *args):
+    """Model output is untrusted: a malformed reply fails the task instead of stopping the run."""
+    try:
+        return fn(*args)
+    except (TypeError, ValueError, AttributeError, KeyError):
+        return {"passed": False, "why": "malformed_reply"}
 
 
 def run_workloads(model, *, num_ctx=8192, think=False, repeats=1):
@@ -75,13 +82,13 @@ def run_workloads(model, *, num_ctx=8192, think=False, repeats=1):
     for rep in range(repeats):
         for case in load_logs():
             g = ollama.generate(model, log_prompt(case), num_ctx=num_ctx, num_predict=400, think=think)
-            out.append({"workload": "logs", "case": case["id"], "rep": rep, **_timing(g), **score_log(g.text, case["expect"])})
+            out.append({"workload": "logs", "case": case["id"], "rep": rep, **_timing(g), **_score(score_log, g.text, case["expect"])})
         for q in load_questions():
             g = ollama.generate(model, doc_prompt(q["question"], docs), num_ctx=num_ctx, num_predict=300, think=think)
-            out.append({"workload": "docs", "case": q["id"], "rep": rep, **_timing(g), **score_doc(g.text, q["expect"])})
+            out.append({"workload": "docs", "case": q["id"], "rep": rep, **_timing(g), **_score(score_doc, g.text, q["expect"])})
         g = ollama.generate(model, code_prompt(), num_ctx=num_ctx, num_predict=700, think=think)
         data = parse_json(g.text) or {}
-        verdict = score_patch(DATA / "coding" / "repo", {data["path"]: data["content"]}) if "path" in data and "content" in data else {"passed": False, "why": "no_patch"}
+        verdict = _score(score_patch, DATA / "coding" / "repo", {data["path"]: data["content"]}) if "path" in data and "content" in data else {"passed": False, "why": "no_patch"}
         out.append({"workload": "code", "case": "pricing-fix", "rep": rep, **_timing(g), "passed": verdict["passed"], "why": verdict["why"]})
     return out
 

@@ -1,10 +1,13 @@
+import ast
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
 
-from labbench import bench, lab, ollama, scoring, stats, workloads
+from localcheck import bench, cli, ollama, scoring, stats, workloads
 
 REPO = Path(__file__).resolve().parent.parent / "data" / "synthetic" / "coding" / "repo"
 FIXED = '''def apply_discount(price_cents: int, percent: int) -> int:
@@ -91,52 +94,54 @@ class Lab(unittest.TestCase):
 
     def test_remote_server_is_refused(self):
         with mock.patch.dict("os.environ", {"OLLAMA_HOST": "10.0.0.5:11434"}), \
-             mock.patch.object(lab.sys, "platform", "darwin"), mock.patch.object(lab.platform, "machine", return_value="arm64"):
-            self.assertIn("not this Mac", lab.preflight())
+             mock.patch.object(cli.sys, "platform", "darwin"), mock.patch.object(cli.platform, "machine", return_value="arm64"):
+            self.assertIn("not this Mac", cli.preflight())
 
     def test_embedding_models_are_skipped(self):
         installed = [{"name": "gemma4:26b-mlx", "family": ""}, {"name": "embeddinggemma-2:740m", "family": "embedding_gemma2"}]
-        self.assertEqual(lab.chat_models(installed), ["gemma4:26b-mlx"])
+        self.assertEqual(cli.chat_models(installed), ["gemma4:26b-mlx"])
 
     def test_verdict_and_table(self):
         good = {"model": "a:1", "decode_tok_s": 68.3, "passed": 15, "total": 15, "missed": []}
         slow = {"model": "b:1", "decode_tok_s": 26.1, "passed": 13, "total": 15, "missed": ["logs", "code"]}
-        self.assertEqual(lab.verdict(good), "fast, all tasks passed")
-        self.assertEqual(lab.verdict(slow), "slow, missed 1 log task, code fix")
-        self.assertIn("68 tok/s", lab.table([good, slow]))
-        self.assertIn("Tasks passed", lab.table([good]))
+        self.assertEqual(cli.verdict(good), "fast, all tasks passed")
+        self.assertEqual(cli.verdict(slow), "slow, missed 1 log task, code fix")
+        self.assertIn("68 tok/s", cli.table([good, slow]))
+        self.assertIn("Tasks passed", cli.table([good]))
 
     def test_choose_returns_the_picked_model(self):
         with mock.patch("builtins.print"):
-            self.assertEqual(lab.choose([], ask=lambda _: "2"), "gemma4:26b-mlx")
-            self.assertEqual(lab.choose([], ask=lambda _: str(len(lab.MEASURED))), lab.MEASURED[-1])
-            for answer in ("", "0", str(len(lab.MEASURED) + 1), "x"):
-                self.assertIsNone(lab.choose([], ask=lambda _, a=answer: a))
-            self.assertIsNone(lab.choose([], ask=mock.Mock(side_effect=EOFError)))
+            self.assertEqual(cli.choose([], ask=lambda _: "2"), "gemma4:26b-mlx")
+            self.assertEqual(cli.choose([], ask=lambda _: str(len(cli.MEASURED))), cli.MEASURED[-1])
+            for answer in ("", "0", str(len(cli.MEASURED) + 1), "x"):
+                self.assertIsNone(cli.choose([], ask=lambda _, a=answer: a))
+            self.assertIsNone(cli.choose([], ask=mock.Mock(side_effect=EOFError)))
 
     def test_download_needs_an_explicit_yes(self):
-        with mock.patch.object(lab.subprocess, "run") as run:
+        with mock.patch.object(cli.subprocess, "run") as run:
             for answer in ("", "n", "yes please", " "):
-                self.assertFalse(lab.pull("m:1", ask=lambda _, a=answer: a))
-            self.assertFalse(lab.pull("m:1", ask=mock.Mock(side_effect=EOFError)))
+                self.assertFalse(cli.pull("m:1", ask=lambda _, a=answer: a))
+            self.assertFalse(cli.pull("m:1", ask=mock.Mock(side_effect=EOFError)))
             run.assert_not_called()
             run.return_value.returncode = 0
-            self.assertTrue(lab.pull("m:1", ask=lambda _: " Y "))
+            self.assertTrue(cli.pull("m:1", ask=lambda _: " Y "))
             run.assert_called_once_with(["ollama", "pull", "m:1"])
             run.return_value.returncode = 1
-            self.assertFalse(lab.pull("m:1", ask=lambda _: "y"))
+            self.assertFalse(cli.pull("m:1", ask=lambda _: "y"))
 
-    def _run_main(self, argv, installed, pick=None, pulled=False):
-        """Run lab.main with every outside effect mocked. Returns (exit code, calls in order, results dir exists)."""
+    def _run_main(self, argv, installed, pick=None, pulled=False, saved_json=None):
+        """Run cli.main with every outside effect mocked. Returns (exit code, calls in order, results dir exists)."""
         calls = mock.Mock()
         calls.pull.return_value = pulled
         calls.test.return_value = {"model": "m", "decode_tok_s": 60, "passed": 15, "total": 15, "missed": []}
         snap = {"chip": "c", "memory_gib": 1, "macos": "27", "ollama_version": "x", "installed_models": [{"name": n} for n in installed]}
-        with tempfile.TemporaryDirectory() as root, mock.patch.object(lab, "ROOT", Path(root)), \
-             mock.patch.object(lab, "preflight", return_value=None), mock.patch.object(lab.env, "snapshot", return_value=snap), \
-             mock.patch.object(lab, "choose", return_value=pick), mock.patch.object(lab, "pull", calls.pull), \
-             mock.patch.object(lab, "test", calls.test), mock.patch("sys.stderr"), mock.patch("builtins.print"):
-            code = lab.main(argv)
+        with tempfile.TemporaryDirectory() as root, mock.patch.object(cli, "ROOT", Path(root)), \
+             mock.patch.object(cli, "preflight", return_value=None), mock.patch.object(cli.env, "snapshot", return_value=snap), \
+             mock.patch.object(cli, "choose", return_value=pick), mock.patch.object(cli, "pull", calls.pull), \
+             mock.patch.object(cli, "test", calls.test), mock.patch("sys.stderr"), mock.patch("builtins.print"):
+            code = cli.main(argv)
+            if saved_json is not None:
+                saved_json += [json.loads(p.read_text()) for p in (Path(root) / "results").glob("*/results.json")]
             return code, [c[0] for c in calls.mock_calls], (Path(root) / "results").exists()
 
     def test_approved_download_runs_the_benchmark_only_after_the_pull_succeeds(self):
@@ -159,8 +164,57 @@ class Lab(unittest.TestCase):
     def test_quitting_the_picker_runs_nothing_and_saves_nothing(self):
         self.assertEqual(self._run_main([], installed=[], pick=None), (0, [], False))
 
+    def test_saved_results_keep_only_the_tested_model(self):
+        saved = []
+        self._run_main(["gemma4:26b-mlx"], installed=["gemma4:26b-mlx", "private-model:1"], saved_json=saved)
+        self.assertEqual([m["name"] for m in saved[0]["environment"]["installed_models"]], ["gemma4:26b-mlx"])
+
+    def test_the_launcher_starts(self):
+        root = Path(__file__).resolve().parent.parent
+        run = subprocess.run([str(root / "check"), "--help"], capture_output=True, text=True, timeout=30)
+        self.assertEqual(run.returncode, 0)
+        self.assertIn("usage: ./check", run.stdout)
+
     def test_installed_model_is_tested_without_a_download(self):
         self.assertEqual(self._run_main([], installed=["gemma4:26b-mlx"], pick="gemma4:26b-mlx"), (0, ["test"], True))
+
+
+class Safety(unittest.TestCase):
+    """The tool runs model-written code and reads model replies. Neither may escape or crash it."""
+
+    def test_malformed_replies_fail_the_task_instead_of_stopping_the_run(self):
+        def canned(model, prompt, **kw):
+            if "Logs:" in prompt:
+                return ollama.Generation(text='{"supports_conclusion": true, "evidence_lines": 5}')
+            if "Question:" in prompt and "Use \"insufficient\"" in prompt:
+                return ollama.Generation(text='{"status": "answered", "sources": [{"a": 1}], "answer": "x"}')
+            return ollama.Generation(text='{"path": 5, "content": ["x"]}')
+        with mock.patch.object(ollama, "generate", canned):
+            rows = workloads.run_workloads("m:1")
+        self.assertFalse(any(r["passed"] for r in rows))
+        self.assertIn("malformed_reply", {r["why"] for r in rows})
+
+    def test_patched_code_runs_without_network_or_writes_outside_the_project(self):
+        with tempfile.TemporaryDirectory() as outside:
+            probe = Path(outside).resolve() / "escaped.txt"
+            attack = ('"""x"""\nimport socket\n'
+                      f'try:\n    open({str(probe)!r}, "w").write("x")\nexcept OSError:\n    pass\n'
+                      'try:\n    socket.create_connection(("127.0.0.1", 9), timeout=1)\nexcept OSError:\n    pass\n' + FIXED)
+            self.assertTrue(scoring.score_patch(REPO, {"calc/pricing.py": attack})["passed"])
+            self.assertFalse(probe.exists())
+
+    def test_a_hanging_patch_times_out_as_a_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / "test_hang.py").write_text("import unittest\n\nclass T(unittest.TestCase):\n    def test_hang(self):\n        while True:\n            pass\n")
+            self.assertEqual(scoring.run_tests(tmp, timeout=2), (False, "timeout"))
+
+    def test_only_the_standard_library_is_imported(self):
+        root = Path(__file__).resolve().parent.parent
+        for path in [*(root / "localcheck").glob("*.py"), *(root / "tests").glob("*.py")]:
+            for node in ast.walk(ast.parse(path.read_text())):
+                names = [a.name for a in node.names] if isinstance(node, ast.Import) else [node.module] if isinstance(node, ast.ImportFrom) and node.level == 0 else []
+                for name in names:
+                    self.assertTrue(name.split(".")[0] in sys.stdlib_module_names or name.split(".")[0] == "localcheck", f"{path.name} imports {name}")
 
 
 if __name__ == "__main__":
