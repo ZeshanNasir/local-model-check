@@ -1,0 +1,834 @@
+{
+ "environment": {
+  "macos": "27.0.1",
+  "hardware_model": "Mac16,7",
+  "chip": "Apple M4 Pro",
+  "memory_gib": 48,
+  "gpu_wired_limit_mb": "0",
+  "power": "AC",
+  "python": "3.15.2",
+  "ollama_version": "0.40.13",
+  "installed_models": [
+   {
+    "name": "nemotron-3.5-bolt:e4b",
+    "size_gb": 7.2,
+    "digest": "fe4af3f5907b",
+    "family": "",
+    "parameter_size": "",
+    "quantization_level": ""
+   },
+   {
+    "name": "flint:40b-a2b-qat-int4",
+    "size_gb": 22.6,
+    "digest": "a503b9032955",
+    "family": "",
+    "parameter_size": "",
+    "quantization_level": "int4"
+   },
+   {
+    "name": "tev1:4b-mxfp8",
+    "size_gb": 4.4,
+    "digest": "2a76e0606594",
+    "family": "qwen3_5",
+    "parameter_size": "4.2B",
+    "quantization_level": "mxfp8"
+   },
+   {
+    "name": "embeddinggemma-2:740m-mxfp8",
+    "size_gb": 1.4,
+    "digest": "a4efd357164f",
+    "family": "",
+    "parameter_size": "",
+    "quantization_level": "mxfp8"
+   },
+   {
+    "name": "qwen3.6:35b-mlx",
+    "size_gb": 23.6,
+    "digest": "e92a3e94bbca",
+    "family": "",
+    "parameter_size": "",
+    "quantization_level": "nvfp4"
+   },
+   {
+    "name": "gemma4:26b-mlx",
+    "size_gb": 18.3,
+    "digest": "f0fc7e0ae494",
+    "family": "",
+    "parameter_size": "",
+    "quantization_level": "nvfp4"
+   },
+   {
+    "name": "qwen3.8:27b-mlx",
+    "size_gb": 18.2,
+    "digest": "c6c48e4dca11",
+    "family": "",
+    "parameter_size": "",
+    "quantization_level": ""
+   }
+  ],
+  "memory_free_pct": 84,
+  "swap_used_mb": 6649.5
+ },
+ "results": [
+  {
+   "model": "qwen3.6:35b-mlx",
+   "decode_tok_s": 67.8,
+   "passed": 13,
+   "total": 15,
+   "missed": [
+    "logs",
+    "code"
+   ],
+   "throughput": {
+    "model": "qwen3.6:35b-mlx",
+    "num_ctx": 8192,
+    "runs": [
+     {
+      "cold": true,
+      "error": "",
+      "load_s": 7.72,
+      "ttft_s": 9.33,
+      "prompt_tokens": 1043,
+      "prompt_tok_s": 679.4,
+      "decode_tokens": 205,
+      "decode_tok_s": 67.6,
+      "wall_s": 12.29
+     },
+     {
+      "cold": false,
+      "error": "",
+      "load_s": 0.01,
+      "ttft_s": 1.14,
+      "prompt_tokens": 1043,
+      "prompt_tok_s": 984.4,
+      "decode_tokens": 201,
+      "decode_tok_s": 67.6,
+      "wall_s": 4.05
+     },
+     {
+      "cold": false,
+      "error": "",
+      "load_s": 0.01,
+      "ttft_s": 1.1,
+      "prompt_tokens": 1043,
+      "prompt_tok_s": 1019.3,
+      "decode_tokens": 195,
+      "decode_tok_s": 67.8,
+      "wall_s": 3.91
+     },
+     {
+      "cold": false,
+      "error": "",
+      "load_s": 0.0,
+      "ttft_s": 1.09,
+      "prompt_tokens": 1043,
+      "prompt_tok_s": 1017.4,
+      "decode_tokens": 231,
+      "decode_tok_s": 68.1,
+      "wall_s": 4.42
+     }
+    ],
+    "warm_summary": {
+     "ttft_s": {
+      "n": 3,
+      "median": 1.1,
+      "min": 1.09,
+      "max": 1.14
+     },
+     "prompt_tok_s": {
+      "n": 3,
+      "median": 1017.4,
+      "min": 984.4,
+      "max": 1019.3
+     },
+     "decode_tok_s": {
+      "n": 3,
+      "median": 67.8,
+      "min": 67.6,
+      "max": 68.1
+     },
+     "wall_s": {
+      "n": 3,
+      "median": 4.05,
+      "min": 3.91,
+      "max": 4.42
+     }
+    },
+    "decode_spread_pct": 0.7374631268436579
+   },
+   "tasks": [
+    {
+     "workload": "logs",
+     "case": "azure-keyvault-expired-secret",
+     "rep": 0,
+     "wall_s": 1.19,
+     "decode_tokens": 46,
+     "decode_tok_s": 65.9,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "logs",
+     "case": "azure-latency-no-cause",
+     "rep": 0,
+     "wall_s": 1.26,
+     "decode_tokens": 59,
+     "decode_tok_s": 67.2,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "logs",
+     "case": "aws-s3-policy-change",
+     "rep": 0,
+     "wall_s": 1.13,
+     "decode_tokens": 51,
+     "decode_tok_s": 66.6,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "logs",
+     "case": "aws-5xx-no-cause",
+     "rep": 0,
+     "wall_s": 0.93,
+     "decode_tokens": 42,
+     "decode_tok_s": 66.1,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "logs",
+     "case": "gcp-cpu-quota",
+     "rep": 0,
+     "wall_s": 1.17,
+     "decode_tokens": 56,
+     "decode_tok_s": 66.9,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "logs",
+     "case": "gcp-restarts-no-cause",
+     "rep": 0,
+     "wall_s": 1.24,
+     "decode_tokens": 62,
+     "decode_tok_s": 67.4,
+     "error": "",
+     "passed": false,
+     "why": "wrong_abstention"
+    },
+    {
+     "workload": "docs",
+     "case": "q-retention",
+     "rep": 0,
+     "wall_s": 1.0,
+     "decode_tokens": 32,
+     "decode_tok_s": 70.7,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-retention-2",
+     "rep": 0,
+     "wall_s": 0.91,
+     "decode_tokens": 32,
+     "decode_tok_s": 78.8,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-deploy",
+     "rep": 0,
+     "wall_s": 0.99,
+     "decode_tokens": 39,
+     "decode_tok_s": 79.8,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-rotation",
+     "rep": 0,
+     "wall_s": 0.47,
+     "decode_tokens": 35,
+     "decode_tok_s": 86.8,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-rotation-2",
+     "rep": 0,
+     "wall_s": 0.73,
+     "decode_tokens": 44,
+     "decode_tok_s": 68.0,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-mtu",
+     "rep": 0,
+     "wall_s": 0.45,
+     "decode_tokens": 35,
+     "decode_tok_s": 92.3,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-oncall",
+     "rep": 0,
+     "wall_s": 0.26,
+     "decode_tokens": 16,
+     "decode_tok_s": 81.8,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-staging",
+     "rep": 0,
+     "wall_s": 0.26,
+     "decode_tokens": 16,
+     "decode_tok_s": 84.3,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "code",
+     "case": "pricing-fix",
+     "rep": 0,
+     "wall_s": 2.44,
+     "decode_tokens": 159,
+     "decode_tok_s": 91.5,
+     "error": "",
+     "passed": false,
+     "why": "tests_fail"
+    }
+   ]
+  },
+  {
+   "model": "gemma4:26b-mlx",
+   "decode_tok_s": 58.9,
+   "passed": 14,
+   "total": 15,
+   "missed": [
+    "code"
+   ],
+   "throughput": {
+    "model": "gemma4:26b-mlx",
+    "num_ctx": 8192,
+    "runs": [
+     {
+      "cold": true,
+      "error": "",
+      "load_s": 3.12,
+      "ttft_s": 4.56,
+      "prompt_tokens": 1052,
+      "prompt_tok_s": 757.0,
+      "decode_tokens": 209,
+      "decode_tok_s": 57.8,
+      "wall_s": 8.13
+     },
+     {
+      "cold": false,
+      "error": "",
+      "load_s": 0.01,
+      "ttft_s": 1.29,
+      "prompt_tokens": 1052,
+      "prompt_tok_s": 848.0,
+      "decode_tokens": 186,
+      "decode_tok_s": 61.6,
+      "wall_s": 4.27
+     },
+     {
+      "cold": false,
+      "error": "",
+      "load_s": 0.0,
+      "ttft_s": 1.3,
+      "prompt_tokens": 1052,
+      "prompt_tok_s": 874.2,
+      "decode_tokens": 191,
+      "decode_tok_s": 58.9,
+      "wall_s": 4.45
+     },
+     {
+      "cold": false,
+      "error": "",
+      "load_s": 0.0,
+      "ttft_s": 1.29,
+      "prompt_tokens": 1052,
+      "prompt_tok_s": 874.8,
+      "decode_tokens": 210,
+      "decode_tok_s": 56.1,
+      "wall_s": 4.95
+     }
+    ],
+    "warm_summary": {
+     "ttft_s": {
+      "n": 3,
+      "median": 1.29,
+      "min": 1.29,
+      "max": 1.3
+     },
+     "prompt_tok_s": {
+      "n": 3,
+      "median": 874.2,
+      "min": 848.0,
+      "max": 874.8
+     },
+     "decode_tok_s": {
+      "n": 3,
+      "median": 58.9,
+      "min": 56.1,
+      "max": 61.6
+     },
+     "wall_s": {
+      "n": 3,
+      "median": 4.45,
+      "min": 4.27,
+      "max": 4.95
+     }
+    },
+    "decode_spread_pct": 9.33786078098472
+   },
+   "tasks": [
+    {
+     "workload": "logs",
+     "case": "azure-keyvault-expired-secret",
+     "rep": 0,
+     "wall_s": 1.39,
+     "decode_tokens": 53,
+     "decode_tok_s": 62.2,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "logs",
+     "case": "azure-latency-no-cause",
+     "rep": 0,
+     "wall_s": 1.02,
+     "decode_tokens": 44,
+     "decode_tok_s": 62.3,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "logs",
+     "case": "aws-s3-policy-change",
+     "rep": 0,
+     "wall_s": 1.21,
+     "decode_tokens": 51,
+     "decode_tok_s": 61.7,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "logs",
+     "case": "aws-5xx-no-cause",
+     "rep": 0,
+     "wall_s": 0.94,
+     "decode_tokens": 40,
+     "decode_tok_s": 62.1,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "logs",
+     "case": "gcp-cpu-quota",
+     "rep": 0,
+     "wall_s": 1.16,
+     "decode_tokens": 50,
+     "decode_tok_s": 62.0,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "logs",
+     "case": "gcp-restarts-no-cause",
+     "rep": 0,
+     "wall_s": 1.36,
+     "decode_tokens": 66,
+     "decode_tok_s": 63.0,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-retention",
+     "rep": 0,
+     "wall_s": 1.03,
+     "decode_tokens": 28,
+     "decode_tok_s": 60.0,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-retention-2",
+     "rep": 0,
+     "wall_s": 0.56,
+     "decode_tokens": 28,
+     "decode_tok_s": 60.3,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-deploy",
+     "rep": 0,
+     "wall_s": 0.71,
+     "decode_tokens": 38,
+     "decode_tok_s": 61.4,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-rotation",
+     "rep": 0,
+     "wall_s": 0.8,
+     "decode_tokens": 43,
+     "decode_tok_s": 61.4,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-rotation-2",
+     "rep": 0,
+     "wall_s": 0.88,
+     "decode_tokens": 47,
+     "decode_tok_s": 61.7,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-mtu",
+     "rep": 0,
+     "wall_s": 1.11,
+     "decode_tokens": 63,
+     "decode_tok_s": 62.5,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-oncall",
+     "rep": 0,
+     "wall_s": 0.45,
+     "decode_tokens": 21,
+     "decode_tok_s": 58.8,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-staging",
+     "rep": 0,
+     "wall_s": 0.44,
+     "decode_tokens": 21,
+     "decode_tok_s": 58.8,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "code",
+     "case": "pricing-fix",
+     "rep": 0,
+     "wall_s": 3.61,
+     "decode_tokens": 173,
+     "decode_tok_s": 62.5,
+     "error": "",
+     "passed": false,
+     "why": "tests_fail"
+    }
+   ]
+  },
+  {
+   "model": "qwen3.8:27b-mlx",
+   "decode_tok_s": 27.8,
+   "passed": 14,
+   "total": 15,
+   "missed": [
+    "logs"
+   ],
+   "throughput": {
+    "model": "qwen3.8:27b-mlx",
+    "num_ctx": 8192,
+    "runs": [
+     {
+      "cold": true,
+      "error": "",
+      "load_s": 4.73,
+      "ttft_s": 13.37,
+      "prompt_tokens": 1066,
+      "prompt_tok_s": 128.9,
+      "decode_tokens": 256,
+      "decode_tok_s": 27.2,
+      "wall_s": 22.41
+     },
+     {
+      "cold": false,
+      "error": "",
+      "load_s": 0.02,
+      "ttft_s": 8.62,
+      "prompt_tokens": 1066,
+      "prompt_tok_s": 129.0,
+      "decode_tokens": 256,
+      "decode_tok_s": 28.1,
+      "wall_s": 17.39
+     },
+     {
+      "cold": false,
+      "error": "",
+      "load_s": 0.03,
+      "ttft_s": 8.11,
+      "prompt_tokens": 1066,
+      "prompt_tok_s": 137.1,
+      "decode_tokens": 256,
+      "decode_tok_s": 27.8,
+      "wall_s": 17.03
+     },
+     {
+      "cold": false,
+      "error": "",
+      "load_s": 0.02,
+      "ttft_s": 8.17,
+      "prompt_tokens": 1066,
+      "prompt_tok_s": 136.0,
+      "decode_tokens": 207,
+      "decode_tok_s": 27.4,
+      "wall_s": 15.42
+     }
+    ],
+    "warm_summary": {
+     "ttft_s": {
+      "n": 3,
+      "median": 8.17,
+      "min": 8.11,
+      "max": 8.62
+     },
+     "prompt_tok_s": {
+      "n": 3,
+      "median": 136.0,
+      "min": 129.0,
+      "max": 137.1
+     },
+     "decode_tok_s": {
+      "n": 3,
+      "median": 27.8,
+      "min": 27.4,
+      "max": 28.1
+     },
+     "wall_s": {
+      "n": 3,
+      "median": 17.03,
+      "min": 15.42,
+      "max": 17.39
+     }
+    },
+    "decode_spread_pct": 2.5179856115108015
+   },
+   "tasks": [
+    {
+     "workload": "logs",
+     "case": "azure-keyvault-expired-secret",
+     "rep": 0,
+     "wall_s": 6.19,
+     "decode_tokens": 87,
+     "decode_tok_s": 33.8,
+     "error": "",
+     "passed": false,
+     "why": "too_many_extra_lines"
+    },
+    {
+     "workload": "logs",
+     "case": "azure-latency-no-cause",
+     "rep": 0,
+     "wall_s": 3.96,
+     "decode_tokens": 47,
+     "decode_tok_s": 31.0,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "logs",
+     "case": "aws-s3-policy-change",
+     "rep": 0,
+     "wall_s": 4.01,
+     "decode_tokens": 57,
+     "decode_tok_s": 31.4,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "logs",
+     "case": "aws-5xx-no-cause",
+     "rep": 0,
+     "wall_s": 2.96,
+     "decode_tokens": 40,
+     "decode_tok_s": 32.1,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "logs",
+     "case": "gcp-cpu-quota",
+     "rep": 0,
+     "wall_s": 3.44,
+     "decode_tokens": 49,
+     "decode_tok_s": 32.9,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "logs",
+     "case": "gcp-restarts-no-cause",
+     "rep": 0,
+     "wall_s": 3.98,
+     "decode_tokens": 64,
+     "decode_tok_s": 31.3,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-retention",
+     "rep": 0,
+     "wall_s": 4.61,
+     "decode_tokens": 37,
+     "decode_tok_s": 30.4,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-retention-2",
+     "rep": 0,
+     "wall_s": 4.3,
+     "decode_tokens": 27,
+     "decode_tok_s": 30.1,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-deploy",
+     "rep": 0,
+     "wall_s": 5.09,
+     "decode_tokens": 57,
+     "decode_tok_s": 33.6,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-rotation",
+     "rep": 0,
+     "wall_s": 1.64,
+     "decode_tokens": 46,
+     "decode_tok_s": 33.7,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-rotation-2",
+     "rep": 0,
+     "wall_s": 1.98,
+     "decode_tokens": 60,
+     "decode_tok_s": 35.2,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-mtu",
+     "rep": 0,
+     "wall_s": 2.03,
+     "decode_tokens": 61,
+     "decode_tok_s": 34.9,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-oncall",
+     "rep": 0,
+     "wall_s": 0.72,
+     "decode_tokens": 16,
+     "decode_tok_s": 35.9,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "docs",
+     "case": "q-staging",
+     "rep": 0,
+     "wall_s": 1.39,
+     "decode_tokens": 39,
+     "decode_tok_s": 35.0,
+     "error": "",
+     "passed": true,
+     "why": ""
+    },
+    {
+     "workload": "code",
+     "case": "pricing-fix",
+     "rep": 0,
+     "wall_s": 9.66,
+     "decode_tokens": 177,
+     "decode_tok_s": 36.8,
+     "error": "",
+     "passed": true,
+     "why": ""
+    }
+   ]
+  }
+ ]
+}
